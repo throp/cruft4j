@@ -1,0 +1,24 @@
+*.class
+
+# Eclipse Files #
+*.classpath
+*.project
+.settings/*
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# SVN Crawler
+cruft4j-svn-crawler/test-checkout/
+
+# Maven Target directories
+cruft4j-calculator/target/
+cruft4j-maven-plugin/target/
+cruft4j-svn-crawler/target/
+cruft4j-test-project/target/
+cruft4j-calculator/.settings/
+cruft4j-maven-plugin/.settings/
+cruft4j-svn-crawler/.settings/
+cruft4j-test-project/.settings/
