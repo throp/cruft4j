@@ -1,0 +1,32 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.cruft4j</groupId>
+  <artifactId>cruft4j-test-project</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
+
+  <name>Cruft4J - Test Project</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.cruft4j</groupId>
+        <artifactId>cruft4j-maven-plugin</artifactId>
+        <version>1.0</version>
+		    <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>calculate-cruft</goal>
+            </goals>
+          </execution>
+        </executions>  
+    		<configuration>
+    		  <scoreThreshold>10</scoreThreshold>
+    		</configuration>      
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>
