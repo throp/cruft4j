@@ -234,16 +234,14 @@ class ScoreCalculator {
 
     ReportGenerator reportGenerator = new ReportGenerator(project, previousStats)
 
-    File fileComplexityAll = new File(projectOutputDir + ReportType.ComplexityAll.url)
-    File fileComplexityNew = new File(projectOutputDir + ReportType.ComplexityNew.url)
-    File fileCopyPasteAll = new File(projectOutputDir + ReportType.CopyPasteAll.url)
-    File fileCopyPasteNew = new File(projectOutputDir + ReportType.CopyPasteNew.url)
+    File fileComplexity = new File(projectOutputDir + ReportType.Complexity.url)
+    File fileCopyPaste = new File(projectOutputDir + ReportType.CopyPaste.url)
     File fileOverall = new File(projectOutputDir + ReportType.Summary.url)
-    fileComplexityAll.write(reportGenerator.generateComplexityHtml(project.methods, ReportType.ComplexityAll))
-    fileComplexityNew.write(reportGenerator.generateComplexityHtml(project.methods.grep({it.isNew}), ReportType.ComplexityNew))
-    fileCopyPasteAll.write(reportGenerator.generateCopyPasteHtml(project.copyPastes, ReportType.CopyPasteAll))
-    fileCopyPasteNew.write(reportGenerator.generateCopyPasteHtml(project.copyPastes.grep({it.isNew}), ReportType.CopyPasteNew))
-    fileOverall.write(reportGenerator.generateOverallHtml())
+    fileComplexity.write(reportGenerator.generateComplexityHtml(project.methods, ReportType.Complexity))
+    //fileComplexityNew.write(reportGenerator.generateComplexityHtml(project.methods.grep({it.isNew}), ReportType.ComplexityNew))
+    fileCopyPaste.write(reportGenerator.generateCopyPasteHtml(project.copyPastes, ReportType.CopyPaste))
+    //fileCopyPasteNew.write(reportGenerator.generateCopyPasteHtml(project.copyPastes.grep({it.isNew}), ReportType.CopyPasteNew))
+    fileOverall.write(reportGenerator.generateSummaryReport())
 
     if(runConfig.archive) {
       archive(runConfig, project)

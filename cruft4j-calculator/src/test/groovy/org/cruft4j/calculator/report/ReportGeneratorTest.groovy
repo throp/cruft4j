@@ -1,11 +1,10 @@
-package org.cruft4j.calculator
+package org.cruft4j.calculator.report
 
 import org.cruft4j.calculator.model.Bucket
 import org.cruft4j.calculator.model.Method
 import org.cruft4j.calculator.model.ProjectStats
 import org.cruft4j.calculator.model.Severity
 import org.cruft4j.calculator.model.ViolationType
-import org.cruft4j.calculator.report.ReportGenerator
 import org.cruft4j.calculator.report.ReportGenerator.ReportType
 
 /**
