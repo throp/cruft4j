@@ -240,7 +240,6 @@ class ScoreCalculator {
     fileComplexity.write(reportGenerator.generateComplexityHtml(project.methods, ReportType.Complexity))
     //fileComplexityNew.write(reportGenerator.generateComplexityHtml(project.methods.grep({it.isNew}), ReportType.ComplexityNew))
     fileCopyPaste.write(reportGenerator.generateCopyPasteHtml(project.copyPastes, ReportType.CopyPaste))
-    //fileCopyPasteNew.write(reportGenerator.generateCopyPasteHtml(project.copyPastes.grep({it.isNew}), ReportType.CopyPasteNew))
     fileOverall.write(reportGenerator.generateSummaryReport())
 
     if(runConfig.archive) {

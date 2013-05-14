@@ -57,6 +57,18 @@ class ProjectStats implements Serializable {
     runDate.getTime()
   }
 
+  def String getFormattedCopypasteScore() {
+    return new DecimalFormat("#,###").format(copypasteScore)
+  }
+
+  def String getFormattedComplexityScore() {
+    return new DecimalFormat("#,###").format(complexityScore)
+  }
+
+  def String getFormattedNcss() {
+    return new DecimalFormat("#,###").format(ncss)
+  }
+
   def String getFormattedScaledScore() {
     return new DecimalFormat("#").format(scaledScore)
   }

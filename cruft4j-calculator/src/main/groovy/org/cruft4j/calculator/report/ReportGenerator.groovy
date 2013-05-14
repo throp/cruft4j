@@ -5,6 +5,8 @@ import org.cruft4j.calculator.model.Severity
 
 
 
+
+
 /**
  * 
  * @author Ben Northrop
@@ -45,13 +47,31 @@ class ReportGenerator {
   def generateCopyPasteHtml(copyPastes, reportType) {
     def out = generateHeader(reportType)
 
+
+    if(copyPastes.grep({ it.isNew }).size() > 0) {
+      out += """<div class="subTitle">New instances since last run...</div>"""
+      out = generateCopypasteTable(out, copyPastes.grep({ it.isNew }))
+      out += """<br/>"""
+      out += """<div class="subTitle">Instances existing since last run...</div>"""
+    }
+
+    out = generateCopypasteTable(out, copyPastes.grep({ !it.isNew }))
+    out += generateFooter()
+
+    return out
+  }
+
+  /**
+   * Return the table of copy paste details.
+   */
+  def String generateCopypasteTable(out, copyPastes) {
     if(copyPastes.isEmpty()) {
       out += "<p>none</p>"
+      return out
     }
-    else {
 
-      out += """
-        <table class="copypaste violation">
+    out += """
+        <table class="copypaste violation" align="center">
           <tr>
             <th>Files</th>
             <th>Tokens</th>
@@ -59,18 +79,18 @@ class ReportGenerator {
           </tr>
       """
 
-      copyPastes.each {
-        out += """\
+    copyPastes.each {
+      out += """\
         <tr class="${it.bucket.severity.name}">
           <td>""";
 
-        it.files.each { out += """\
-          <a href="${it.fileName}">${it.fileName}</a>
+      it.files.each { out += """\
+          ${it.fileName}
           (${it.lineNumber
           })<br>
          """ }
 
-        out += """\
+      out += """\
             </td>
           <td>${it.tokens}</td>
           <td>${
@@ -78,9 +98,9 @@ class ReportGenerator {
           }</td>
         </tr>
           """
-      }
     }
-    out += generateFooter()
+    out += "</table>"
+
     return out
   }
 
@@ -90,12 +110,31 @@ class ReportGenerator {
   def generateComplexityHtml(methods, reportType) {
     def out = generateHeader(reportType)
 
+    if(methods.grep({ it.isNew }).size() > 0) {
+      out += """<div class="subTitle">New instances since last run...</div>"""
+      out = generateComplexityTable(out, methods.grep({ it.isNew }))
+      out += """<br/>"""
+      out += """<div class="subTitle">Instances existing since last run...</div>"""
+    }
+
+    out = generateComplexityTable(out, methods.grep({ !it.isNew }))
+
+    out += generateFooter()
+    return out
+  }
+
+  /**
+   * Generate the table display of the complexity violations.
+   */
+  def String generateComplexityTable(out, methods) {
+
     if(methods.isEmpty()) {
       out += "<p>none</p>"
+      return out
     }
-    else {
-      out += """
-          <table class="complexity violation">
+
+    out += """
+          <table class="complexity violation"  align="center">
           <tr>
             <th>Method</th>
             <th>Complexity</th>
@@ -103,18 +142,17 @@ class ReportGenerator {
       """
 
 
-      methods.each { out += """\
-				<tr class="${it.bucket.severity.name}">
-					<td>
+    methods.each { out += """\
+        <tr class="${it.bucket.severity.name}">
+          <td>
             ${it.getNameTrunc()}<br/>
             </td>
           <td>${
             it.ccn
           }</td>
-				</tr>
+        </tr>
           """ }
-    }
-    out += generateFooter()
+    out += "</table>"
     return out
   }
 
@@ -149,14 +187,14 @@ class ReportGenerator {
         <tr>
           <td>Yellow</td>
           <td class="numberCell">${projectStats.numComplexityYellow}</td>
-          <td>x</td>
+          <td>&nbsp;x</td>
           <td class="numberCell">${Severity.Yellow.points}</td>
           <td>=</td>
           <td class="numberCell">${projectStats.numComplexityYellow * Severity.Yellow.points}</td>
           <td></td>
           <td>Yellow</td>
           <td class="numberCell">${projectStats.numCopypasteYellow}</td>
-          <td>x</td>
+          <td>&nbsp;x</td>
           <td class="numberCell">${Severity.Yellow.points}</td>
           <td>=</td>
           <td class="numberCell">${projectStats.numCopypasteYellow * Severity.Yellow.points}</td>
@@ -164,14 +202,14 @@ class ReportGenerator {
         <tr>
           <td>Orange</td>
           <td class="numberCell">${projectStats.numComplexityOrange}</td>
-          <td>x</td>
+          <td>&nbsp;x</td>
           <td class="numberCell">${Severity.Orange.points}</td>
           <td>=</td>
           <td class="numberCell">${projectStats.numComplexityOrange * Severity.Orange.points}</td>
           <td></td>
           <td>Orange</td>
           <td class="numberCell">${projectStats.numCopypasteOrange}</td>
-          <td>x</td>
+          <td>&nbsp;x</td>
           <td class="numberCell">${Severity.Orange.points}</td>
           <td>=</td>
           <td class="numberCell">${projectStats.numCopypasteOrange * Severity.Orange.points}</td>
@@ -179,14 +217,14 @@ class ReportGenerator {
         <tr>
           <td>Red</td>
           <td class="numberCell">${projectStats.numComplexityRed}</td>
-          <td>x</td>
+          <td>&nbsp;x</td>
           <td class="numberCell">${Severity.Red.points}</td>
           <td>=</td>
           <td class="numberCell">${projectStats.numComplexityRed * Severity.Orange.points}</td>
           <td></td>
           <td>Red</td>
           <td class="numberCell">${projectStats.numCopypasteRed}</td>
-          <td>x</td>
+          <td>&nbsp;x</td>
           <td class="numberCell">${Severity.Red.points}</td>
           <td>=</td>
           <td class="numberCell">${projectStats.numCopypasteRed * Severity.Red.points}</td>
@@ -204,14 +242,14 @@ class ReportGenerator {
           <td></td>
           <td></td>
           <td></td>
-          <td class="numberCell">${projectStats.complexityScore}</td>
+          <td class="numberCell">${projectStats.formattedComplexityScore}</td>
           <td></td>
           <td></td>
           <td></td>
           <td></td>
           <td></td>
           <td></td>
-          <td class="numberCell">${projectStats.copypasteScore}</td>
+          <td class="numberCell">${projectStats.formattedCopypasteScore}</td>
         </tr>
         <!-- LOC -->
         <tr>
@@ -220,14 +258,14 @@ class ReportGenerator {
           <td></td>
           <td></td>
           <td>/</td>
-          <td class="numberCell">${projectStats.ncss}</td>
+          <td class="numberCell">${projectStats.formattedNcss}</td>
           <td>LOC</td>
           <td></td>
           <td></td>
           <td></td>
           <td></td>
           <td>/</td>
-          <td class="numberCell">${projectStats.ncss}</td>
+          <td class="numberCell">${projectStats.formattedNcss}</td>
           <td>LOC</td>
         </tr>
         <tr height="1">
@@ -324,13 +362,14 @@ class ReportGenerator {
                 td.orange { background-color: orange; }
                 td.red { background-color: red; }
                 .titleBar { font-size: 24pt; font-weight: bold; padding: 2px; border-width: 0px 0px 2px 0px; border-style: solid; margin: 0px; border-color: #333333; color: #333333;}
-                .navBar { padding: 0px; margin: 3px; text-align: right; font-size: 12pt;}
+                .navBar { padding: 0px; margin: 3px; text-align: right; font-size: 12pt; width:1000px;}
                 .totalScore { color: white; font-size: 24pt; padding: 3px; text-align: center; font-weight: bold; }
                 .projectBar { background-color: gainsboro; font-size: 12pt; width: 800;}
                 .projectLabel { font-weight: bold; width: 110px; }
                 .projectValue { text-align: left; text-align: left;}
                 .cruft4jTitle a { font-color: #333333;  font-style: none; display: inline; }
                 .scoreTypeTitle { font-weight: bold; }
+                .subTitle { font-weight: bold; font-size: 14pt; } 
                 table.violation { border-spacing: 0px; border-collapse: collapse; padding: 20px; margin: 10px;  }
                 table.violation th { border: 1px solid #333333; background-color: #666666; text-align: left; font-size: 18px;color: white;padding: 5px;  }
                 table.violation tr.yellow { background-color: yellow; }
