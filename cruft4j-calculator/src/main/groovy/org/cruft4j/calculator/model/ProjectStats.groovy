@@ -3,6 +3,7 @@ package org.cruft4j.calculator.model
 import groovy.transform.ToString
 
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 
 
 /**
@@ -57,6 +58,10 @@ class ProjectStats implements Serializable {
     runDate.getTime()
   }
 
+  def String getFormattedRunDate() {
+    return new SimpleDateFormat("MM/dd/yyyy hh:mm").format(runDate)
+  }
+
   def String getFormattedCopypasteScore() {
     return new DecimalFormat("#,###").format(copypasteScore)
   }
@@ -70,7 +75,7 @@ class ProjectStats implements Serializable {
   }
 
   def String getFormattedScaledScore() {
-    return new DecimalFormat("#").format(scaledScore)
+    return Integer.parseInt(getScaledComplexityScore()) + Integer.parseInt(getScaledCopypasteScore())
   }
 
   def String getScaledComplexityScore() {

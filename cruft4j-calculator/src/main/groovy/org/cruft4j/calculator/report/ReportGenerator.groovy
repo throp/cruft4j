@@ -18,7 +18,9 @@ class ReportGenerator {
 
     Complexity("Complexity", "cruft4j-complexity.html"),
 
-    CopyPaste("Copy-Paste", "cruft4j-copypaste.html")
+    CopyPaste("Copy-Paste", "cruft4j-copypaste.html"),
+
+    Trend("Trend", "cruft4j-trend.html")
 
     String name
 
@@ -39,16 +41,47 @@ class ReportGenerator {
     this.lastProjectStats = lastProjectStats
   }
 
+  /**
+   * Generate the HTML file for the trend report.
+   */
+  def generateTrendHtml(ProjectStats [] projects) {
+    def out = generateHeader(ReportType.Trend)
 
+    out += """
+      <table class="copypaste violation" align="center">
+                <tr>
+                  <th>Run Date</th>
+                  <th>Complexity Score</th>
+                  <th>Copy-Paste Score</th>
+                  <th>Overall Score</th>
+                </tr>
+      """
+
+    projects.each {  out += """
+      <tr>
+        <td>${it.formattedRunDate}</td>
+        <td>${it.scaledComplexityScore}</td>
+        <td>${it.scaledCopypasteScore}</td>
+        <td class="totalScore ${projectStats.scoreSeverity}">${it.formattedScaledScore}</td>
+      </tr>
+"""  }
+
+    out += "</table>"
+    out += generateFooter()
+
+    return out
+  }
 
   /**
    * Generate the HTML file for the copy-paste results.
    */
-  def generateCopyPasteHtml(copyPastes, reportType) {
-    def out = generateHeader(reportType)
+  def generateCopyPasteHtml(copyPastes) {
+    def out = generateHeader(ReportType.CopyPaste)
 
-
-    if(copyPastes.grep({ it.isNew }).size() > 0) {
+    if(copyPastes.grep({ it.isNew }).size() == copyPastes.size()) {
+      out = generateCopypasteTable(out, copyPastes)
+    }
+    else if(copyPastes.grep({ it.isNew }).size() > 0) {
       out += """<div class="subTitle">New instances since last run...</div>"""
       out = generateCopypasteTable(out, copyPastes.grep({ it.isNew }))
       out += """<br/>"""
@@ -107,10 +140,13 @@ class ReportGenerator {
   /**
    * Generate the HTML file for the complexity results.
    */
-  def generateComplexityHtml(methods, reportType) {
-    def out = generateHeader(reportType)
+  def generateComplexityHtml(methods) {
+    def out = generateHeader(ReportType.Complexity)
 
-    if(methods.grep({ it.isNew }).size() > 0) {
+    if(methods.grep({ it.isNew }).size() == methods.size()) {
+      out = generateComplexityTable(out, methods)
+    }
+    else if(methods.grep({ it.isNew }).size() > 0) {
       out += """<div class="subTitle">New instances since last run...</div>"""
       out = generateComplexityTable(out, methods.grep({ it.isNew }))
       out += """<br/>"""
@@ -333,7 +369,7 @@ class ReportGenerator {
         <tr>
           <td colspan="8"></td>
           <td colspan="4" class="scoreTypeTitle" style="text-align: right">Cruft Score:&nbsp;&nbsp;</td>
-          <td colspan="1" class="totalScore ${projectStats.scoreSeverity}">${projectStats.formattedScaledScore}</td>
+          <td colspan="1" class="totalScore ${projectStats.scoreSeverity}"><a href="http://www.bennorthrop.com/cruft4j/compare.php?score=${projectStats.formattedScaledScore}" style="text-decoration: none;"><font color="white">${projectStats.formattedScaledScore}</font></a></td>
         </tr>
       </table>
           """
@@ -368,7 +404,7 @@ class ReportGenerator {
                 .projectLabel { font-weight: bold; width: 110px; }
                 .projectValue { text-align: left; text-align: left;}
                 .cruft4jTitle a { font-color: #333333;  font-style: none; display: inline; }
-                .scoreTypeTitle { font-weight: bold; }
+                .scoreTypeTitle { font-weight: bold; font-size: 14pt; }
                 .subTitle { font-weight: bold; font-size: 14pt; } 
                 table.violation { border-spacing: 0px; border-collapse: collapse; padding: 20px; margin: 10px;  }
                 table.violation th { border: 1px solid #333333; background-color: #666666; text-align: left; font-size: 18px;color: white;padding: 5px;  }
@@ -395,16 +431,17 @@ class ReportGenerator {
               <body >
               <table border="0" cellspacing="0" cellpadding="0" width="1000" align="center" >
                 <tr>
-                  <td width="1000">  
+                  <td width="1000" align="center">  
                     <table class="titleBar">
                       <tr>
                         <td width="960"><a href="http://www.bennorthrop.com/Cruft4J/index.php" style="text-decoration: none;"><font color="black">Cruft4J</font></a> &#187; ${report.name} Report</td>
-                        <td width="40" class="totalScore ${projectStats.scoreSeverity}">${projectStats.formattedScaledScore}</td>
+                        <td width="40" class="totalScore ${projectStats.scoreSeverity}"><a href="http://www.bennorthrop.com/cruft4j/compare.php?score=${projectStats.formattedScaledScore}" style="text-decoration: none;"><font color="white">${projectStats.formattedScaledScore}</font></a></td>
                       </tr>
                     </table>
                     <div class="navBar">
                         <b>Reports:</b> &nbsp;
                         <a href="${ReportType.Summary.url}">Summary</a> &nbsp;|&nbsp;
+                        <a href="${ReportType.Trend.url}">Trend</a> &nbsp;|&nbsp;
                         <a href="${ReportType.Complexity.url}">Complexity</a> &nbsp;|&nbsp; 
                         <a href="${ReportType.CopyPaste.url}">Copy Paste</a>
                     </div>

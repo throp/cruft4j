@@ -231,17 +231,16 @@ class ScoreCalculator {
     project.copyPastes.each() { it.setIsNew(copyPasteDAO.checkIfNew(it)) }
     project.copyPastes.each() {  copyPasteDAO.insert(it) }
 
-
     ReportGenerator reportGenerator = new ReportGenerator(project, previousStats)
 
     File fileComplexity = new File(projectOutputDir + ReportType.Complexity.url)
     File fileCopyPaste = new File(projectOutputDir + ReportType.CopyPaste.url)
     File fileOverall = new File(projectOutputDir + ReportType.Summary.url)
-    fileComplexity.write(reportGenerator.generateComplexityHtml(project.methods, ReportType.Complexity))
-    //fileComplexityNew.write(reportGenerator.generateComplexityHtml(project.methods.grep({it.isNew}), ReportType.ComplexityNew))
-    fileCopyPaste.write(reportGenerator.generateCopyPasteHtml(project.copyPastes, ReportType.CopyPaste))
+    File fileTrend = new File(projectOutputDir + ReportType.Trend.url)
+    fileComplexity.write(reportGenerator.generateComplexityHtml(project.methods))
+    fileCopyPaste.write(reportGenerator.generateCopyPasteHtml(project.copyPastes))
     fileOverall.write(reportGenerator.generateSummaryReport())
-
+    fileTrend.write(reportGenerator.generateTrendHtml(projectDAO.findAllProjects(project.path)))
     if(runConfig.archive) {
       archive(runConfig, project)
     }

@@ -15,6 +15,48 @@ class ProjectDAO extends DAO {
     createTable()
   }
 
+  def ProjectStats [] findAllProjects(String projectPath) {
+    def projects = []
+    sql.eachRow( """
+        SELECT 
+          name,
+          path,
+          run_id,
+          run_date,
+          ncss,
+          complexity_score,
+          copypaste_score,
+          raw_score,
+          scaled_score,
+          num_complexity_yellow,
+          num_complexity_orange,
+          num_complexity_red,
+          num_copypaste_yellow,
+          num_copypaste_orange,
+          num_copypaste_red
+        FROM project_stats 
+        ORDER BY run_id DESC
+""" ) {
+          def projectStats = new ProjectStats(
+              name : it.name,
+              path : it.path,
+              runDate : it.run_date,
+              ncss : it.ncss,
+              complexityScore : it.complexity_score,
+              copypasteScore : it.copypaste_score,
+              rawScore : it.raw_score,
+              scaledScore : it.scaled_score,
+              numComplexityYellow : it.num_complexity_yellow,
+              numComplexityOrange : it.num_complexity_orange,
+              numComplexityRed : it.num_complexity_red,
+              numCopypasteYellow : it.num_copypaste_yellow,
+              numCopypasteOrange : it.num_copypaste_orange,
+              numCopypasteRed : it.num_copypaste_red)
+          projects << projectStats
+        }
+    return projects
+  }
+
   def ProjectStats fetchMostRecentProjectStats(String projectPath) {
     def row = sql.firstRow("""\
         SELECT 

@@ -31,4 +31,8 @@ class ProjectDAOTest extends DAOTest {
 
     def ps2 = projectDAO.fetchMostRecentProjectStats()
   }
+
+  void testFindAll() {
+    println projectDAO.findAllProjects()
+  }
 }
