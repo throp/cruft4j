@@ -4,9 +4,6 @@ import org.cruft4j.calculator.model.ProjectStats
 import org.cruft4j.calculator.model.Severity
 
 
-
-
-
 /**
  * 
  * @author Ben Northrop
@@ -62,7 +59,7 @@ class ReportGenerator {
         <td>${it.formattedRunDate}</td>
         <td>${it.scaledComplexityScore}</td>
         <td>${it.scaledCopypasteScore}</td>
-        <td class="totalScore ${projectStats.scoreSeverity}">${it.formattedScaledScore}</td>
+        <td class="totalScore ${it.scoreSeverity}"><a class="${projectStats.scoreSeverity}" href="http://www.bennorthrop.com/cruft4j/compare.php?score=${projectStats.formattedScaledScore}&bucket=${projectStats.scoreSeverity}">${projectStats.formattedScaledScore}</a></td>
       </tr>
 """  }
 
@@ -86,9 +83,12 @@ class ReportGenerator {
       out = generateCopypasteTable(out, copyPastes.grep({ it.isNew }))
       out += """<br/>"""
       out += """<div class="subTitle">Instances existing since last run...</div>"""
+      out = generateCopypasteTable(out, copyPastes.grep({ !it.isNew }))
+    }
+    else {
+      out = generateCopypasteTable(out, copyPastes)
     }
 
-    out = generateCopypasteTable(out, copyPastes.grep({ !it.isNew }))
     out += generateFooter()
 
     return out
@@ -118,7 +118,7 @@ class ReportGenerator {
           <td>""";
 
       it.files.each { out += """\
-          ${it.fileName}
+          <a class="fileLink" href="file:///${it.fileName}">${it.fileName}</a>
           (${it.lineNumber
           })<br>
          """ }
@@ -151,9 +151,11 @@ class ReportGenerator {
       out = generateComplexityTable(out, methods.grep({ it.isNew }))
       out += """<br/>"""
       out += """<div class="subTitle">Instances existing since last run...</div>"""
+      out = generateComplexityTable(out, methods.grep({ !it.isNew }))
     }
-
-    out = generateComplexityTable(out, methods.grep({ !it.isNew }))
+    else {
+      out = generateComplexityTable(out, methods)
+    }
 
     out += generateFooter()
     return out
@@ -369,7 +371,7 @@ class ReportGenerator {
         <tr>
           <td colspan="8"></td>
           <td colspan="4" class="scoreTypeTitle" style="text-align: right">Cruft Score:&nbsp;&nbsp;</td>
-          <td colspan="1" class="totalScore ${projectStats.scoreSeverity}"><a href="http://www.bennorthrop.com/cruft4j/compare.php?score=${projectStats.formattedScaledScore}" style="text-decoration: none;"><font color="white">${projectStats.formattedScaledScore}</font></a></td>
+          <td colspan="1" class="totalScore ${projectStats.scoreSeverity}"><a class="${projectStats.scoreSeverity}" href="http://www.bennorthrop.com/cruft4j/compare.php?score=${projectStats.formattedScaledScore}&bucket=${projectStats.scoreSeverity}" >${projectStats.formattedScaledScore}</a></td>
         </tr>
       </table>
           """
@@ -389,17 +391,20 @@ class ReportGenerator {
                 <style type="text/css">
               
                 body { font-family: Garamond; font-size: 12pt;}
+                a { text-decoration: none; }
+                a:hover { text-decoration: underline; }
                 td.numberCell { text-align: right; }
                 td.lineCell { border-color: #333333; border-width: 0px 0px 1px 0px; border-style: solid; padding: 0px; margin: 0px; }
                 td.heading { font-weight: bold; }
                 td.title { text-align: center; }
-                td.green{ background-color: green; }
-                td.yellow { background-color: yellow; color: #333333; }
-                td.orange { background-color: orange; }
-                td.red { background-color: red; }
+                .fileLink { color: #333333; }
+                .green { background-color: green; color: white; }
+                .yellow { background-color: yellow; color: #333333; }
+                .orange { background-color: orange; color: white; }
+                .red { background-color: red; color: white; }
                 .titleBar { font-size: 24pt; font-weight: bold; padding: 2px; border-width: 0px 0px 2px 0px; border-style: solid; margin: 0px; border-color: #333333; color: #333333;}
                 .navBar { padding: 0px; margin: 3px; text-align: right; font-size: 12pt; width:1000px;}
-                .totalScore { color: white; font-size: 24pt; padding: 3px; text-align: center; font-weight: bold; }
+                .totalScore { font-size: 24pt; padding: 3px; text-align: center; font-weight: bold; }
                 .projectBar { background-color: gainsboro; font-size: 12pt; width: 800;}
                 .projectLabel { font-weight: bold; width: 110px; }
                 .projectValue { text-align: left; text-align: left;}
@@ -411,21 +416,13 @@ class ReportGenerator {
                 table.violation tr.yellow { background-color: yellow; }
                 table.violation tr.orange { background-color: orange; }
                 table.violation tr.red { background-color: red; }
-                table.violation td { border: 1px solid #333333; padding: 5px; }
-                      table.calculation th { 
-                        border: 1px 0px 1px 0px solid #333333; 
-                        background-color: #666666; 
-                        text-align: left; 
-                        font-size: 18px;
-                        color: white;
-                        padding: 5px; 
-                      }
-                          table.calculation { 
-                          border-spacing: 0px; 
-                          border-collapse: collapse; 
-                          padding: 20px;
-                          margin: 10px;
-                        }
+                table.violation td.green { background-color: green; color: white; }
+                table.violation td.yellow { background-color: yellow; color: #333333; }
+                table.violation td.orange { background-color: orange; color: white; }
+                table.violation td.red { background-color: red; color: white; }
+                table.violation td { border: 1px solid #333333; padding: 5px; color: #333333; }
+                table.calculation th { border: 1px 0px 1px 0px solid #333333; background-color: #666666; text-align: left; font-size: 18px; color: white; padding: 5px; }
+                table.calculation { border-spacing: 0px; border-collapse: collapse; padding: 20px; margin: 10px;  }
                 </style>
               </head>
               <body >
@@ -434,8 +431,8 @@ class ReportGenerator {
                   <td width="1000" align="center">  
                     <table class="titleBar">
                       <tr>
-                        <td width="960"><a href="http://www.bennorthrop.com/Cruft4J/index.php" style="text-decoration: none;"><font color="black">Cruft4J</font></a> &#187; ${report.name} Report</td>
-                        <td width="40" class="totalScore ${projectStats.scoreSeverity}"><a href="http://www.bennorthrop.com/cruft4j/compare.php?score=${projectStats.formattedScaledScore}" style="text-decoration: none;"><font color="white">${projectStats.formattedScaledScore}</font></a></td>
+                        <td width="960"><a href="http://www.bennorthrop.com/cruft4j/index.php" ><font color="black">Cruft4J</font></a> &#187; ${report.name} Report</td>
+                        <td width="40" class="totalScore ${projectStats.scoreSeverity}"><a class="${projectStats.scoreSeverity}" href="http://www.bennorthrop.com/cruft4j/compare.php?score=${projectStats.formattedScaledScore}&bucket=${projectStats.scoreSeverity}">${projectStats.formattedScaledScore}</a></td>
                       </tr>
                     </table>
                     <div class="navBar">

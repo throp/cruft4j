@@ -59,7 +59,7 @@ class ProjectStats implements Serializable {
   }
 
   def String getFormattedRunDate() {
-    return new SimpleDateFormat("MM/dd/yyyy hh:mm").format(runDate)
+    return new SimpleDateFormat("MM/dd/yyyy hh:mm a").format(runDate)
   }
 
   def String getFormattedCopypasteScore() {
@@ -79,18 +79,30 @@ class ProjectStats implements Serializable {
   }
 
   def String getScaledComplexityScore() {
+    if(ncss == 0) {
+      return "0"
+    }
     return new DecimalFormat("#").format((complexityScore / ncss) * 1000)
   }
 
   def String getScaledCopypasteScore() {
+    if(ncss == 0) {
+      return "0"
+    }
     return new DecimalFormat("#").format((copypasteScore / ncss) * 1000)
   }
 
   def String getPreScaledComplexityScore() {
+    if(ncss == 0) {
+      return "0"
+    }
     return new DecimalFormat("#.###").format(complexityScore / ncss)
   }
 
   def String getPreScaledCopypasteScore() {
+    if(ncss == 0) {
+      return "0"
+    }
     return new DecimalFormat("#.###").format(copypasteScore / ncss)
   }
 

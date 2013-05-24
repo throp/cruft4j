@@ -10,7 +10,7 @@ class ScoreCalculatorTest extends GroovyTestCase {
 
     def cruft4jHome = System.getenv("CRUFT4J_HOME")
     if(cruft4jHome == null) {
-      assert ScoreCalculator.deriveAndCreateProjectOutputDir(runConfig) == ".\\cruft4j\\"
+      assert ScoreCalculator.deriveAndCreateProjectOutputDir(runConfig) == ".\\output\\"
     }
     else {
       assert ScoreCalculator.deriveAndCreateProjectOutputDir(runConfig) == cruft4jHome + "\\output\\"

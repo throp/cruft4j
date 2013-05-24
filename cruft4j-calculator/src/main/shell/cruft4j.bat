@@ -35,4 +35,4 @@ SET CLASSPATH=%CLASSPATH%;%CRUFT4J_HOME%\lib\xmlParserAPIs-2.6.2.jar
 SET CLASSPATH=%CLASSPATH%;%CRUFT4J_HOME%\lib\xml-resolver-1.2.jar
 SET CLASSPATH=%CLASSPATH%;%CRUFT4J_HOME%\lib\xom-1.0.jar
 
-java -classpath %CLASSPATH% org.summalabs.cruft4j.calculator.calc.ScoreCalculator %1 %2 %3 %4 %5 %6 %7 %8 %9 
+java -classpath %CLASSPATH% org.cruft4j.calculator.calc.ScoreCalculator %1 %2 %3 %4 %5 %6 %7 %8 %9 

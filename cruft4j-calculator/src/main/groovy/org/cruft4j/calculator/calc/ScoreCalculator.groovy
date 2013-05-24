@@ -22,6 +22,7 @@ import org.cruft4j.calculator.model.Severity
 import org.cruft4j.calculator.model.ViolationType
 import org.cruft4j.calculator.report.ReportGenerator
 import org.cruft4j.calculator.report.ReportGenerator.ReportType
+import org.xml.sax.SAXParseException
 
 
 
@@ -118,24 +119,23 @@ class ScoreCalculator {
     ----------------------------------
     CONFIG
       Source: ${runConfig.sourceDir}
-      Ouput: ${projectOutputDir}
-    """
+      Ouput : ${projectOutputDir}\n"""
 
     if(!"".equals(runConfig.projectName) && !"cruft4j".equals(runConfig.projectName)) {
-      str += "\n  Project: ${runConfig.projectName}"
+      str += "      Project: ${runConfig.projectName}\n"
     }
     if(!"".equals(runConfig.repositoryUrl)) {
-      str += "\n  Repository URL: ${runConfig.repositoryUrl}"
+      str += "      Repository URL: ${runConfig.repositoryUrl}\n"
     }
     if(!"".equals(runConfig.projectUrl)) {
-      str += "\n  Project URL: ${runConfig.projectUrl}"
+      str += "      Project URL: ${runConfig.projectUrl}\n"
     }
     if(!runConfig.runFresh) {
-      str += "\n  Run Fresh: ${runConfig.runFresh}"
+      str += "      Run Fresh: ${runConfig.runFresh}\n"
     }
 
     if(runConfig.logToConsole) {
-      println(str)
+      print(str)
     }
 
     return str
@@ -146,11 +146,9 @@ class ScoreCalculator {
    */
   static String printProjectStats(RunConfig runConfig, ProjectStats project) {
 
-    String str = """\
-    PROJECT STATS
-      Total Methods    : ${project.methods.size()}
-      Methods Javadoc'd: ${project.numJavadocs}
-      NCSS             : ${project.ncss}
+    String str = """    PROJECT STATS
+      Total Methods: ${project.methods.size()}
+      NCSS         : ${project.ncss}
     COPY PASTE VIOLATIONS
       Yellow: ${project.numCopypasteYellow}
       Orange: ${project.numCopypasteOrange}
@@ -278,13 +276,13 @@ class ScoreCalculator {
       numJavadocs: project.getNumJavadocs()
     ]
 
-    http.get( path : '/Cruft4J/archive/insert_project.php', contentType : TEXT, query : payload) { resp, reader ->
+    http.get( path : '/cruft4j/archive/insert_project.php', contentType : TEXT, query : payload) { resp, reader ->
       println "response status: ${resp.statusLine}"
     }
   }
 
   /**
-   * Define the project output directory, based on the runconfig and CRUFT4J_HOME environemnt variable.
+   * Define the project output directory, based on the runconfig and CRUFT4J_HOME environment variable.
    */
   def static String deriveAndCreateProjectOutputDir(RunConfig runConfig) {
 
@@ -295,9 +293,10 @@ class ScoreCalculator {
       if(cruft4jHome == null) {
         projectOutputDir = "." + File.separator + "output"
       } else {
+        verifyDirectoryExists(cruft4jHome)
         projectOutputDir = cruft4jHome + File.separator + "output"
-        verifyDirectoryExists(projectOutputDir)
       }
+      createDirIfNotExists(projectOutputDir)
     } else {
       projectOutputDir = runConfig.outputDir
       verifyDirectoryExists(projectOutputDir)
@@ -309,12 +308,17 @@ class ScoreCalculator {
     }
 
     projectOutputDir += File.separator
-
-    // If the directory doesn't exist, create it
-    def dir = new File(projectOutputDir)
-    if(!dir.exists()) dir.mkdir()
+    createDirIfNotExists(projectOutputDir)
 
     return projectOutputDir
+  }
+
+  /* 
+   * If the directory doesn't exist, create it
+   */
+  def static createDirIfNotExists(String outputDir) {
+    def dir = new File(outputDir)
+    if(!dir.exists()) dir.mkdir()
   }
 
   /**
@@ -349,6 +353,11 @@ class ScoreCalculator {
     def tmpFile = new File(tmpFileName)
     def newFile = new File(fileName)
     def i = 0
+
+    if(!tmpFile.exists()) {
+      return
+    }
+
     tmpFile.eachLine { line ->
       if(i == 0) newFile.write("<?xml version=\"1.0\"?>")
       else newFile.append(line)
@@ -384,7 +393,14 @@ class ScoreCalculator {
    * Parse the CPD output (XML) and put into the Cruft4J data model.
    */
   void parseCpd(ProjectStats project, String fileName) {
-    def pmdcpd = new XmlParser().parse(fileName)
+    if(!new File(fileName).exists()) {
+      return
+    }
+
+    def pmdcpd
+    try { pmdcpd = new XmlParser().parse(fileName) }
+    catch(SAXParseException e) { return;    }
+
     pmdcpd.duplication.each{
       def copyPaste = new CopyPaste(
           lines: it.attributes().get("lines").toInteger(),

@@ -3,7 +3,7 @@
 
   <groupId>org.cruft4j</groupId>
   <artifactId>cruft4j-calculator</artifactId>
-  <version>1.0</version>
+  <version>0.9</version>
   <packaging>jar</packaging>
 
   <name>Cruft4J - Calculator</name>

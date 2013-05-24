@@ -5,7 +5,6 @@ import org.cruft4j.calculator.model.Method
 import org.cruft4j.calculator.model.ProjectStats
 import org.cruft4j.calculator.model.Severity
 import org.cruft4j.calculator.model.ViolationType
-import org.cruft4j.calculator.report.ReportGenerator.ReportType
 
 /**
  * 
@@ -25,9 +24,7 @@ class ReportGeneratorTest extends GroovyTestCase {
     ps.methods.add(m1)
 
     ReportGenerator rg = new ReportGenerator(ps, ps)
-    assert rg.generateComplexityHtml(ps.methods, ReportType.ComplexityAll).contains("html")
-    assert rg.generateComplexityHtml(ps.methods, ReportType.ComplexityAll).contains("50")
-    assert rg.generateComplexityHtml(ps.methods, ReportType.ComplexityAll).contains("foo")
-    assert rg.generateComplexityHtml(ps.methods, ReportType.ComplexityAll).contains("7")
+    assert rg.generateComplexityHtml(ps.methods).contains("html")
+    assert rg.generateComplexityHtml(ps.methods).contains("7")
   }
 }
