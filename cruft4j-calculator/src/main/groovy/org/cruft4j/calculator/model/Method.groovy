@@ -20,6 +20,11 @@ class Method implements Serializable {
 
   boolean isNew
 
+
+  def boolean isDefault() {
+    return name.contains("equals(") || name.contains("hashCode(") || name.contains("toString(")
+  }
+
   def String getNameTrunc() {
     return name.size() > 125 ? name[0..124] + "..." : name
   }

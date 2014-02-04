@@ -17,4 +17,6 @@ class RunConfig {
   boolean runFresh = true
 
   boolean logToConsole = true
+
+  boolean ignoreDefaultMethods = true
 }

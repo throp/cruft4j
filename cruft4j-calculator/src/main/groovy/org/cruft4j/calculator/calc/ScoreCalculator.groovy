@@ -87,6 +87,7 @@ class ScoreCalculator {
           if(it == "-useCache") runConfig.runFresh = false
           else if(it == "-console") runConfig.logToConsole = true
           else if(it == "-archive") runConfig.archive = true
+          else if(it == "-defaultMethods") runConfig.ignoreDefaultMethods = false
           else option = it
         }
       }
@@ -202,7 +203,7 @@ class ScoreCalculator {
     }
 
     parseCpd(project, cpdFileName)
-    parseJavaNcss(project, ncssFileName)
+    parseJavaNcss(project, ncssFileName, runConfig.ignoreDefaultMethods)
 
     project.numCopypasteYellow = project.copyPastes.findAll{ it.bucket.severity == Severity.Yellow}.size()
     project.numCopypasteOrange = project.copyPastes.findAll{ it.bucket.severity == Severity.Orange}.size()
@@ -368,7 +369,7 @@ class ScoreCalculator {
   /**
    * Parse the XML file generated from JavaNCSS, and populate into a cruft4j data structure.
    */
-  void parseJavaNcss(ProjectStats project, String fileName) {
+  void parseJavaNcss(ProjectStats project, String fileName, boolean ignoreDefaultMethods) {
     def javancss = new XmlParser().parse(fileName)
     javancss.functions.function.each{
       Bucket bucket = deriveBucket(COMPLEXITY_BUCKETS, it.ccn.text().toInteger())
@@ -381,7 +382,15 @@ class ScoreCalculator {
             bucket: bucket,
             projectStats: project
             )
-        project.methods.add(method)
+
+        /*
+         * Allow the user to ignore default methods like "equals" or "hashCode" 
+         * so not to skew the results for methods that are naturally complex and
+         * don't really need to be maintained, so don't matter.
+         */
+        if(!method.isDefault() || !ignoreDefaultMethods) {
+          project.methods.add(method)
+        }
       } else {
         project.numComplexityGreen++
       }

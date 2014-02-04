@@ -3,11 +3,30 @@
 
   <groupId>org.cruft4j</groupId>
   <artifactId>cruft4j-calculator</artifactId>
-  <version>0.9</version>
+  <version>0.9.1</version>
   <packaging>jar</packaging>
-
   <name>Cruft4J - Calculator</name>
-
+  <description>Static code analysis tool for cacluating cruft score.</description>
+  <url>http://www.cruft4j.org</url>
+  <licenses>
+    <license>
+      <name>BSD 2-Clause License</name>
+      <url>http://opensource.org/licenses/BSD-2-Clause</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <developerConnection>scm:git:git@github.com:throp/cruft4j.git</developerConnection>    
+    <connection>scm:git:git@github.com:throp/cruft4j.git</connection>
+    <url>git@github.com:throp/cruft4j.git</url>
+  </scm>  
+  <developers>
+    <developer>
+      <id>throp</id>
+      <name>Ben Northrop</name>
+      <email>ben_northrop@yahoo.com</email>
+    </developer>
+  </developers>  
   <properties>
     <java.version>1.6</java.version>
     <gmavenVersion>1.4</gmavenVersion>
@@ -44,6 +63,7 @@
   </dependencies>
   <build>
     <plugins>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
